@@ -13,3 +13,10 @@ After this step we can check the version of the CDK installed by running the fol
 cdk --version
 ```
 
+Console sign-in URL: https://huseyincerc-udemy-tutorial.signin.aws.amazon.com/console
+
+User name: AdminForCDKDeployment
+
+Console password: in mail
+
+
