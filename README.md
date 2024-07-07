@@ -35,6 +35,11 @@ cdk --version
 
 Console sign-in URL: https://huseyincerc-udemy-tutorial.signin.aws.amazon.com/console
 
-User name: AdminForCDKDeployment
+Username: AdminForCDKDeployment
 
 Console password: in mail
+
+AWS Lambda Spring Boot App:
+
+https://www.baeldung.com/spring-boot-aws-lambda
+
