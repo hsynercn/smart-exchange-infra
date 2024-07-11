@@ -6,6 +6,7 @@ import software.amazon.awscdk.services.lambda.Runtime;
 import software.constructs.Construct;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.Duration;
 // import software.amazon.awscdk.Duration;
 // import software.amazon.awscdk.services.sqs.Queue;
 
@@ -45,5 +46,25 @@ public class SmartExchangeInfraStack extends Stack {
         CfnOutput.Builder.create(this, "myFunctionUrlOutput")
                 .value(myFunctionUrl.getUrl())
                 .build();
+
+        Function springBootLambda = Function.Builder.create(this, "SpringBootLambda")
+        .runtime(Runtime.JAVA_21) // Ensure this matches your Java runtime
+        .handler("smart.exchange.provider.aws.api.StreamLambdaHandler::handleRequest") // Adjust this to your handler class
+        .code(Code.fromAsset("/Users/huseyincanercan/Desktop/WORKSPACE/smart-exchange-provider-aws-api/target/smart-exchange-provider-aws-api-1.0-SNAPSHOT.jar")) // Use local path
+        .memorySize(1024) // Adjust based on your needs
+        .timeout(Duration.minutes(2)) // Adjust based on your needs
+        .build();
+
+        // Define the Lambda function URL resource for Spring Boot
+        FunctionUrl springBootLambdaUrl = springBootLambda.addFunctionUrl(FunctionUrlOptions.builder()
+                .authType(FunctionUrlAuthType.NONE)
+                .build());
+
+        // Define a CloudFormation output for your Spring Boot URL
+        CfnOutput.Builder.create(this, "springBootLambdaUrlOutput")
+                .value(springBootLambdaUrl.getUrl())
+                .build();
+
+
     }
 }
