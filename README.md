@@ -24,13 +24,18 @@ Initial setup
 
 ```bash
 npm install -g aws-cdk # Install AWS CDK
-npm install -g aws-cdk # Upgrade AWS CDK
 ```
 
 After this step we can check the version of the CDK installed by running the following command:
 
 ```bash
 cdk --version
+```
+
+We can deploy the stack by running the following command:
+
+```bash
+cdk deploy
 ```
 
 Console sign-in URL: https://huseyincerc-udemy-tutorial.signin.aws.amazon.com/console
