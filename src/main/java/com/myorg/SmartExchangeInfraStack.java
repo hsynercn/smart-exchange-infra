@@ -1,6 +1,9 @@
 package com.myorg;
 
 import software.amazon.awscdk.CfnOutput;
+import software.amazon.awscdk.services.apigateway.LambdaIntegration;
+import software.amazon.awscdk.services.apigateway.Resource;
+import software.amazon.awscdk.services.apigateway.RestApi;
 import software.amazon.awscdk.services.lambda.*;
 import software.amazon.awscdk.services.lambda.Runtime;
 import software.constructs.Construct;
@@ -55,14 +58,23 @@ public class SmartExchangeInfraStack extends Stack {
         .timeout(Duration.minutes(2)) // Adjust based on your needs
         .build();
 
-        // Define the Lambda function URL resource for Spring Boot
-        FunctionUrl springBootLambdaUrl = springBootLambda.addFunctionUrl(FunctionUrlOptions.builder()
-                .authType(FunctionUrlAuthType.NONE)
-                .build());
+        // Define the API Gateway REST API
+        RestApi api = RestApi.Builder.create(this, "SpringBootApi")
+                .restApiName("Spring Boot Service")
+                .description("This service serves a Spring Boot application.")
+                .build();
 
-        // Define a CloudFormation output for your Spring Boot URL
-        CfnOutput.Builder.create(this, "springBootLambdaUrlOutput")
-                .value(springBootLambdaUrl.getUrl())
+        // Create a proxy resource and method for the API
+        Resource proxyResource = api.getRoot().addProxy();
+        proxyResource.addMethod("GET", new LambdaIntegration(springBootLambda));
+        proxyResource.addMethod("POST", new LambdaIntegration(springBootLambda));
+        proxyResource.addMethod("PUT", new LambdaIntegration(springBootLambda));
+        proxyResource.addMethod("DELETE", new LambdaIntegration(springBootLambda));
+
+
+        // Define a CloudFormation output for your API Gateway URL
+        CfnOutput.Builder.create(this, "springBootApiUrlOutput")
+                .value(api.getUrl())
                 .build();
 
 
