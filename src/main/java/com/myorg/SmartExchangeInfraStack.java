@@ -4,12 +4,19 @@ import software.amazon.awscdk.CfnOutput;
 import software.amazon.awscdk.services.apigateway.LambdaIntegration;
 import software.amazon.awscdk.services.apigateway.Resource;
 import software.amazon.awscdk.services.apigateway.RestApi;
+import software.amazon.awscdk.services.dynamodb.Attribute;
+import software.amazon.awscdk.services.dynamodb.AttributeType;
+import software.amazon.awscdk.services.dynamodb.Table;
+import software.amazon.awscdk.services.iam.Effect;
+import software.amazon.awscdk.services.iam.PolicyStatement;
 import software.amazon.awscdk.services.lambda.*;
 import software.amazon.awscdk.services.lambda.Runtime;
 import software.constructs.Construct;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.Duration;
+
+import java.util.Arrays;
 // import software.amazon.awscdk.Duration;
 // import software.amazon.awscdk.services.sqs.Queue;
 
@@ -58,11 +65,34 @@ public class SmartExchangeInfraStack extends Stack {
         .timeout(Duration.minutes(2)) // Adjust based on your needs
         .build();
 
+        // Define the DynamoDB table
+        Table myTable = Table.Builder.create(this, "ExchangeData")
+                .partitionKey(Attribute.builder()
+                        .name("id")
+                        .type(AttributeType.STRING)
+                        .build())
+                .tableName("ExchangeData")
+                .build();
+
+        // Create an IAM policy statement
+        PolicyStatement dynamoDbPolicy = PolicyStatement.Builder.create()
+                .effect(Effect.ALLOW)
+                .actions(Arrays.asList(
+                        "dynamodb:*"
+                ))
+                .resources(Arrays.asList(myTable.getTableArn()))
+                .build();
+
+        // Attach the policy to the Lambda function
+        springBootLambda.addToRolePolicy(dynamoDbPolicy);
+
         // Define the API Gateway REST API
         RestApi api = RestApi.Builder.create(this, "SpringBootApi")
                 .restApiName("Spring Boot Service")
                 .description("This service serves a Spring Boot application.")
                 .build();
+
+
 
         // Create a proxy resource and method for the API
         Resource proxyResource = api.getRoot().addProxy();
