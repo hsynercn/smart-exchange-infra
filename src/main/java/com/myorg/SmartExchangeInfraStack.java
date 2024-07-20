@@ -30,33 +30,6 @@ public class SmartExchangeInfraStack extends Stack {
 
         // The code that defines your stack goes here
 
-        // example resource
-        // final Queue queue = Queue.Builder.create(this, "SmartExchangeInfraQueue")
-        //         .visibilityTimeout(Duration.seconds(300))
-        //         .build();
-        // Define the Lambda function resource
-        Function myFunction = Function.Builder.create(this, "HelloWorldFunction")
-                .runtime(Runtime.NODEJS_20_X) // Provide any supported Node.js runtime
-                .handler("index.handler")
-                .code(Code.fromInline(
-                        "exports.handler = async function(event) {" +
-                                " return {" +
-                                " statusCode: 200," +
-                                " body: JSON.stringify('Hello World!')" +
-                                " };" +
-                                "};"))
-                .build();
-
-        // Define the Lambda function URL resource
-        FunctionUrl myFunctionUrl = myFunction.addFunctionUrl(FunctionUrlOptions.builder()
-                .authType(FunctionUrlAuthType.NONE)
-                .build());
-
-        // Define a CloudFormation output for your URL
-        CfnOutput.Builder.create(this, "myFunctionUrlOutput")
-                .value(myFunctionUrl.getUrl())
-                .build();
-
         Function springBootLambda = Function.Builder.create(this, "SpringBootLambda")
         .runtime(Runtime.JAVA_21) // Ensure this matches your Java runtime
         .handler("smart.exchange.provider.aws.api.StreamLambdaHandler::handleRequest") // Adjust this to your handler class
