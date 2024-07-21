@@ -7,6 +7,12 @@ import software.amazon.awscdk.services.apigateway.RestApi;
 import software.amazon.awscdk.services.dynamodb.Attribute;
 import software.amazon.awscdk.services.dynamodb.AttributeType;
 import software.amazon.awscdk.services.dynamodb.Table;
+import software.amazon.awscdk.services.events.CronOptions;
+import software.amazon.awscdk.services.events.Rule;
+import software.amazon.awscdk.services.events.RuleProps;
+import software.amazon.awscdk.services.events.Schedule;
+import software.amazon.awscdk.services.events.targets.ApiGateway;
+import software.amazon.awscdk.services.events.targets.ApiGatewayProps;
 import software.amazon.awscdk.services.iam.Effect;
 import software.amazon.awscdk.services.iam.PolicyStatement;
 import software.amazon.awscdk.services.lambda.*;
@@ -17,8 +23,7 @@ import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.Duration;
 
 import java.util.Arrays;
-// import software.amazon.awscdk.Duration;
-// import software.amazon.awscdk.services.sqs.Queue;
+
 
 public class SmartExchangeInfraStack extends Stack {
     public SmartExchangeInfraStack(final Construct scope, final String id) {
@@ -66,13 +71,28 @@ public class SmartExchangeInfraStack extends Stack {
                 .build();
 
 
-
         // Create a proxy resource and method for the API
         Resource proxyResource = api.getRoot().addProxy();
         proxyResource.addMethod("GET", new LambdaIntegration(springBootLambda));
         proxyResource.addMethod("POST", new LambdaIntegration(springBootLambda));
         proxyResource.addMethod("PUT", new LambdaIntegration(springBootLambda));
         proxyResource.addMethod("DELETE", new LambdaIntegration(springBootLambda));
+
+        Schedule hourlySchedule = Schedule.cron(CronOptions.builder()
+                .minute("0")
+                .hour("*")
+                .build());
+
+        Rule resetCurrencyRule = new Rule(this, "ResetCurrencyRule",
+                RuleProps.builder()
+                        .schedule(hourlySchedule)
+                        .build());
+
+        //add rule target to proxyResource resetcurrency endpoint
+        resetCurrencyRule.addTarget(new ApiGateway(api, ApiGatewayProps.builder()
+                .path("/resetcurrency")
+                .method("GET")
+                .build()));
 
 
         // Define a CloudFormation output for your API Gateway URL
