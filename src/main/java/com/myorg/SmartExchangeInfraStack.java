@@ -1,9 +1,7 @@
 package com.myorg;
 
 import software.amazon.awscdk.CfnOutput;
-import software.amazon.awscdk.services.apigateway.LambdaIntegration;
-import software.amazon.awscdk.services.apigateway.Resource;
-import software.amazon.awscdk.services.apigateway.RestApi;
+import software.amazon.awscdk.services.apigateway.*;
 import software.amazon.awscdk.services.dynamodb.Attribute;
 import software.amazon.awscdk.services.dynamodb.AttributeType;
 import software.amazon.awscdk.services.dynamodb.Table;
@@ -23,6 +21,7 @@ import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.Duration;
 
 import java.util.Arrays;
+import java.util.Map;
 
 
 public class SmartExchangeInfraStack extends Stack {
@@ -65,9 +64,19 @@ public class SmartExchangeInfraStack extends Stack {
         springBootLambda.addToRolePolicy(dynamoDbPolicy);
 
         // Define the API Gateway REST API
+        //add cache to GET /currency endpoint with max TTL
         RestApi api = RestApi.Builder.create(this, "SpringBootApi")
                 .restApiName("Spring Boot Service")
                 .description("This service serves a Spring Boot application.")
+                .deploy(true)
+                .deployOptions(StageOptions.builder()
+                        .methodOptions(Map.of(
+                                "/currency/GET", MethodDeploymentOptions.builder()
+                                        .cachingEnabled(true)
+                                        .cacheTtl(Duration.minutes(5))
+                                        .build()
+                        ))
+                        .build())
                 .build();
 
 
