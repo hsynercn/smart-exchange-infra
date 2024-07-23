@@ -77,6 +77,10 @@ public class SmartExchangeInfraStack extends Stack {
                                         .build()
                         ))
                         .build())
+                .defaultCorsPreflightOptions(CorsOptions.builder()
+                        .allowOrigins(Cors.ALL_ORIGINS)
+                        .allowMethods(Arrays.asList("GET"))
+                        .build())
                 .build();
 
 
