@@ -1,5 +1,6 @@
 package com.myorg;
 
+import org.jetbrains.annotations.NotNull;
 import software.amazon.awscdk.CfnOutput;
 import software.amazon.awscdk.services.apigateway.*;
 import software.amazon.awscdk.services.dynamodb.Attribute;
@@ -77,6 +78,11 @@ public class SmartExchangeInfraStack extends Stack {
                                         .build()
                         ))
                         .build())
+                //.defaultCorsPreflightOptions(CorsOptions.builder()
+                //        .allowOrigins(Cors.ALL_ORIGINS)
+                //        .allowMethods(Cors.ALL_METHODS)
+                //        .allowHeaders(Arrays.asList("*"))
+                //        .build())
                 .build();
 
 
