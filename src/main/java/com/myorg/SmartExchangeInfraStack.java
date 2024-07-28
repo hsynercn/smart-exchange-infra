@@ -83,15 +83,12 @@ public class SmartExchangeInfraStack extends Stack {
                 //        .allowMethods(Cors.ALL_METHODS)
                 //        .allowHeaders(Arrays.asList("*"))
                 //        .build())
+                .defaultIntegration(new LambdaIntegration(springBootLambda))
                 .build();
 
 
         // Create a proxy resource and method for the API
         Resource proxyResource = api.getRoot().addProxy();
-        proxyResource.addMethod("GET", new LambdaIntegration(springBootLambda));
-        proxyResource.addMethod("POST", new LambdaIntegration(springBootLambda));
-        proxyResource.addMethod("PUT", new LambdaIntegration(springBootLambda));
-        proxyResource.addMethod("DELETE", new LambdaIntegration(springBootLambda));
 
         Schedule hourlySchedule = Schedule.cron(CronOptions.builder()
                 .minute("0")
