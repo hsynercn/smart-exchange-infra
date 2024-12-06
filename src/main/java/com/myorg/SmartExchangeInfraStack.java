@@ -52,6 +52,14 @@ public class SmartExchangeInfraStack extends Stack {
                 .tableName("ExchangeData")
                 .build();
 
+        Table userTable = Table.Builder.create(this, "User")
+                .partitionKey(Attribute.builder()
+                        .name("id")
+                        .type(AttributeType.STRING)
+                        .build())
+                .tableName("User")
+                .build();
+
         // Create an IAM policy statement
         PolicyStatement dynamoDbPolicy = PolicyStatement.Builder.create()
                 .effect(Effect.ALLOW)
@@ -61,8 +69,17 @@ public class SmartExchangeInfraStack extends Stack {
                 .resources(Arrays.asList(myTable.getTableArn()))
                 .build();
 
+        PolicyStatement dynamoDbPolicyUser = PolicyStatement.Builder.create()
+                .effect(Effect.ALLOW)
+                .actions(Arrays.asList(
+                        "dynamodb:*"
+                ))
+                .resources(Arrays.asList(userTable.getTableArn()))
+                .build();
+
         // Attach the policy to the Lambda function
         springBootLambda.addToRolePolicy(dynamoDbPolicy);
+        springBootLambda.addToRolePolicy(dynamoDbPolicyUser);
 
         // Define the API Gateway REST API
         //add cache to GET /currency endpoint with max TTL
