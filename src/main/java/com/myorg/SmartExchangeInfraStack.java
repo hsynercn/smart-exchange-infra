@@ -94,6 +94,7 @@ public class SmartExchangeInfraStack extends Stack {
                         .allowOrigins(Cors.ALL_ORIGINS)
                         .allowMethods(Arrays.asList("GET"))
                         .build())
+                .defaultIntegration(new LambdaIntegration(springBootLambda))
                 .build();
 
 
