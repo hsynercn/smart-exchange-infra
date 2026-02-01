@@ -38,7 +38,7 @@ public class SmartExchangeInfraStack extends Stack {
         Function springBootLambda = Function.Builder.create(this, "SpringBootLambda")
         .runtime(Runtime.JAVA_21) // Ensure this matches your Java runtime
         .handler("smart.exchange.provider.aws.api.StreamLambdaHandler::handleRequest") // Adjust this to your handler class
-        .code(Code.fromAsset("/Users/huseyincanercan/Desktop/WORKSPACE/smart-exchange-provider-aws-api/target/smart-exchange-provider-aws-api-1.0-SNAPSHOT.jar")) // Use local path
+        .code(Code.fromAsset("/Users/huseyincanercan/Desktop/WORKSPACE_2026/smart-exchange-provider-aws-api/build/distributions/smart-exchange-provider-aws-api.zip")) // Use local path
         .memorySize(1024) // Adjust based on your needs
         .timeout(Duration.minutes(2)) // Adjust based on your needs
         .build();
